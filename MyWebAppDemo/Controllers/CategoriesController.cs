@@ -18,7 +18,9 @@ namespace MyWebAppDemo.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(ApplicationDbContext context, ILogger<CategoriesController> logger)
+        public CategoriesController(
+            ApplicationDbContext context, 
+            ILogger<CategoriesController> logger)
         {
             _context = context;
             _logger = logger;
@@ -120,7 +122,7 @@ namespace MyWebAppDemo.Controllers
                 = _context.Categories.Any(c => c.CategoryName == category.CategoryName);
             if (isDuplicateFound)
             {
-                ModelState.AddModelError("POST", "Duplicate Category Found with same Category Name!");
+                ModelState.AddModelError("PUT", "Duplicate Category Found with same Category Name!");
             }
 
             if (ModelState.IsValid)
