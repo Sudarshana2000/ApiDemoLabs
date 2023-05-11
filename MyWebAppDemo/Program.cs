@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyWebAppDemo.Data;
 
@@ -11,6 +12,11 @@ using MyWebAppDemo.Data;
 // Add the following Nuget Packages for API Documentation Support for Swagger (OpenAPI)
 //      Microsoft.AspNetCore.OpenApi
 //      Swashbuckle.AspNetCore
+
+
+// Add the following Assembly-level attribute
+//    to ensure that Swagger generates the complete API documentation
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 
 
 namespace MyWebAppDemo
