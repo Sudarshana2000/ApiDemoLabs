@@ -54,8 +54,56 @@ namespace MyWebAppDemo.Controllers
             return category;
         }
 
+        /***********
+        * ORIGINAL VERSION of the PUT action method
+
+            // PUT: api/Categories/5
+            // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            [HttpPut("{id}")]
+            public async Task<IActionResult> PutCategory(int id, Category category)
+            {
+                if (id != category.CategoryId)
+                {
+                    return BadRequest();
+                }
+
+                _context.Entry(category).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CategoryExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
+
+        * **********/
+
+
+        /********* 
+         * Updated PUT Action Method to address Server-Side Validation 
+         * NOTE:
+         *      Data is sanitized before consumption 
+         *      Return Type of the method is changed
+         *      - it can return BadRequest()        because the request was invalid
+         *      - it can return BadRequest(state)   because server-side validation found data invalid
+         *      - it can return NoContent()         because it was successfull in updating resource
+         *      - it can return NotFound()          because resource is no longer available for update
+         * ******/
         // PUT: api/Categories/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
@@ -64,26 +112,43 @@ namespace MyWebAppDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(category).State = EntityState.Modified;
+            // Sanitize the Data
+            category.CategoryName = category.CategoryName.Trim();
 
-            try
+            // Server Side Validation
+            bool isDuplicateFound 
+                = _context.Categories.Any(c => c.CategoryName == category.CategoryName);
+            if (isDuplicateFound)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                ModelState.AddModelError("POST", "Duplicate Category Found with same Category Name!");
             }
 
-            return NoContent();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Entry(category).State = EntityState.Modified;
+
+                    await _context.SaveChangesAsync();
+                    return NoContent();
+                }
+                catch (DbUpdateConcurrencyException exp)
+                {
+                    if (!CategoryExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("PUT", exp.Message);
+                    }
+                }
+            }
+
+            return BadRequest(ModelState);
         }
+
+
 
         // POST: api/Categories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -99,6 +164,9 @@ namespace MyWebAppDemo.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction("GetCategory", new { id = category.CategoryId }, category);
         }
+
+
+
 
         // DELETE: api/Categories/5
         [HttpDelete("{id}")]

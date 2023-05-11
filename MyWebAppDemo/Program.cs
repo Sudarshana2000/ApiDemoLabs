@@ -45,8 +45,8 @@ namespace MyWebAppDemo
                 options.UseSqlServer(connString);
             });
 
-            // Registers the Output Cache capability 
-            builder.Services.AddOutputCache();
+            // Register the Output Cache capability 
+            // builder.Services.AddOutputCache();
 
             // Register the Controllers (also needed for Swagger)
             builder.Services.AddControllers();
