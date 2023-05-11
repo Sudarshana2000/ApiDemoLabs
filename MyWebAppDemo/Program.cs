@@ -1,6 +1,17 @@
-
 using Microsoft.EntityFrameworkCore;
 using MyWebAppDemo.Data;
+
+// Add the following Nuget Packages for Entity Framework Core support
+//      Microsoft.EntityFrameworkCore.SqlServer
+//      Microsoft.EntityFrameworkCore.Tools         (for EF Migrations)
+
+// You would need the following Nuget Package for Controller & View Scaffolding
+//      Microsoft.VisualStudio.Web.CodeGeneration.Design
+
+// Add the following Nuget Packages for API Documentation Support for Swagger (OpenAPI)
+//      Microsoft.AspNetCore.OpenApi
+//      Swashbuckle.AspNetCore
+
 
 namespace MyWebAppDemo
 {
@@ -10,17 +21,18 @@ namespace MyWebAppDemo
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+
+            //-----  Add services to the container.
 
             // Register the ApplicationDbContext for Dependency Injection
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                // Extract the connection string from the appsetting.json file
+                // Extract the connection string from the appsettings.json file
                 string? connString
                     = builder.Configuration.GetConnectionString("MyDbConnection");
                 if (string.IsNullOrEmpty(connString))
                 {
-                    throw new Exception("Connection String MyDbConnection has not been configured");
+                    throw new Exception("Connection string MyDbConnection has not been configured");
                 }
 
                 // Register the ApplicationDbContext to use SQL Server
@@ -28,12 +40,14 @@ namespace MyWebAppDemo
             });
 
 
+            // Register the Controllers (also needed for Swagger)
             builder.Services.AddControllers();
 
             builder.Services.AddRazorPages();
 
+            // Register the Swagger (OpenAPI) services 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();     // required for Minimal APIs
+            builder.Services.AddEndpointsApiExplorer();         // required for Minimal APIs
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
@@ -43,7 +57,12 @@ namespace MyWebAppDemo
             {
                 app.UseDeveloperExceptionPage();
 
+                // Configure the Swagger middleware
                 app.UseSwagger();
+
+                // Configure the SwaggerUI middleware
+                //    https://localhost:xxxx/swagger/index.html
+                //    https://localhost:xxxx/swagger/v1/swagger.json
                 app.UseSwaggerUI();
             }
             else
@@ -61,7 +80,7 @@ namespace MyWebAppDemo
 
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.MapControllers();           // Needed to register Controllers (for Swagger also)
             app.MapRazorPages();
 
             // Register ASP.NET Routes for the MVC Controllers
