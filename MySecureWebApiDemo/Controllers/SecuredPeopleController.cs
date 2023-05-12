@@ -4,7 +4,7 @@ using MySecureWebApiDemo.Models;
 
 namespace MySecureWebApiDemo.Controllers
 {
-    [Authorize]
+    [Authorize]                                             // Authorization Filter
     [Route("api/[controller]")]
     [ApiController]
     public class SecuredPeopleController : ControllerBase
@@ -33,6 +33,22 @@ namespace MySecureWebApiDemo.Controllers
             _logger.LogInformation("extracting all employees");
 
             return Ok(persons);
+        }
+
+
+        [AllowAnonymous]                        // Authentication Filter
+        [HttpPost]
+        public IActionResult Post(Person person)
+        {
+            return Ok();
+        }
+
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Manager")]            // Authorization Filter
+        public IActionResult Delete(int id)
+        {
+            return Ok();
         }
     }
 }

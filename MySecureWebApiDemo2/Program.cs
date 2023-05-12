@@ -10,6 +10,10 @@
  *      the Authentication schema in the appsettings.development.json file!
  *      With the details of the Schema, the Issuer & the Audience!
  *      
+ *      To list the data about the token(s)
+ *          >dotnet user-jwts list
+ *          >dotnet user-jwts print <tokenId>
+ *      
  *      You can check out the contents of the JWT Token at https://jwt.io/
  *      
  *      To test the API open PostMan, and in the Headers add:
