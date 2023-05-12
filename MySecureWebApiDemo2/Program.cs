@@ -4,8 +4,11 @@
  *  
  *  NOTE: 
  *      To generate a developer user JWT token to test out our API,
- *      Open the Developer Command Prompt in the Project folder, and run the following command:
+ *      make sure that the application is not running.
+ *      
+ *      Then, open the Developer Command Prompt in the Project folder, and run the following command:
  *          >dotnet user-jwts create
+ *      
  *      Apart from the JWT token churned out, then user-jwts tool will add a new section for
  *      the Authentication schema in the appsettings.development.json file!
  *      With the details of the Schema, the Issuer & the Audience!
